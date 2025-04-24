@@ -1,6 +1,8 @@
 from django.urls import path
-from .api import BusRouteAPIView
+from .api import BusRouteViewSet
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-    path("buses/search/", BusRouteAPIView.as_view(), name="bus-search"),
-]
+router = DefaultRouter()
+router.register("busroutes",BusRouteViewSet,basename="busroute")
+
+urlpatterns = router.urls

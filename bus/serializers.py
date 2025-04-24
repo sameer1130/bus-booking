@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Bus, BusRoute
+from booking.models import BookedSeat
 
 
 class BusSerializer(serializers.ModelSerializer):
@@ -16,6 +17,9 @@ class BusSerializer(serializers.ModelSerializer):
         )
 
 class BusRouteSerializer(serializers.ModelSerializer):
+    available_seats = serializers.SerializerMethodField()
+
+
     class Meta:
         model = BusRoute
         fields = (
@@ -27,6 +31,17 @@ class BusRouteSerializer(serializers.ModelSerializer):
             "arrival_time",
             "price",
             "date",
+            "available_seats",
+            "total_seats",
             "created_at",
             "updated_at",
         )
+
+    def get_available_seats(self, obj):
+        total_capacity = obj.bus.capacity
+
+        booked_seat_count = BookedSeat.objects.filter(
+            booking__bus_route=obj,
+            is_cancelled= False
+        ).count()
+        return total_capacity - booked_seat_count

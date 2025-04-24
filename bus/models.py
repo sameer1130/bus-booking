@@ -1,5 +1,6 @@
 from django.db import models
 from core.mixins import AbstractTrack
+from booking.models import BookedSeat
 
 # Create your models here.
 
@@ -30,6 +31,20 @@ class BusRoute(AbstractTrack):
     arrival_time = models.TimeField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
+
+    @property
+    def total_seats(self):
+        return self.bus.capacity
+    
+    @property
+    def available_seats(self):
+        booked_seat = BookedSeat.objects.filter(
+            booking__bus_route = self,
+            is_cancelled = False
+        ).count()
+
+        return self.total_seats - booked_seat
+        
 
     def __str__(self):
         return f"Route from {self.source} to {self.destination} for Bus {self.bus.bus_number}"

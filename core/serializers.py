@@ -25,6 +25,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+    def validate_phone(self, value):
+        if User.objects.get(phone=value).exists():
+            raise serializers.ValidationError("Phone number exists")
+        return value
     
     def create(self, validated_data):
         user = User(**validated_data)
