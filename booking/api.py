@@ -223,7 +223,7 @@ class CancelSeatView(APIView):
         if not seat_number:
             return Response({"error": "Seat number is required."}, status=400)
         try:
-            seat = BookedSeat.objects.filter(booking__uuid=booking.uuid, seat_number=seat_number).first() 
+            seat = BookedSeat.objects.get(booking=booking, seat_number=seat_number)
         except BookedSeat.DoesNotExist:
             return Response({"error": "Seat not found."}, status=404)
         
@@ -243,32 +243,32 @@ class CancelSeatView(APIView):
 
         
 
-class AvailableSeatsView(APIView):
-    def get(self, request,uuid):
-        # bus_route = request.query_params.get('bus_route')
-        # if not bus_route:
-        #     return Response({"error": "Bus route is required."}, status=400)
+# class AvailableSeatsView(APIView):
+#     def get(self, request,uuid):
+#         # bus_route = request.query_params.get('bus_route')
+#         # if not bus_route:
+#         #     return Response({"error": "Bus route is required."}, status=400)
         
-        try:
-            route = BusRoute.objects.get(uuid=uuid)
-        except BusRoute.DoesNotExist:
-            return Response({"error": "Bus route not found."}, status=404)
+#         try:
+#             route = BusRoute.objects.get(uuid=uuid)
+#         except BusRoute.DoesNotExist:
+#             return Response({"error": "Bus route not found."}, status=404)
 
-        bus = route.bus 
+#         bus = route.bus 
 
-        booked_seats_count = BookedSeat.objects.filter(
-            booking__bus_route=route,
-            is_cancelled=False
-        ).count()
+#         booked_seats_count = BookedSeat.objects.filter(
+#             booking__bus_route=route,
+#             is_cancelled=False
+#         ).count()
 
-        available_seats = bus.capacity - booked_seats_count 
+#         available_seats = bus.capacity - booked_seats_count 
        
 
 
 
-        return Response({
-            "bus_route": str(route),
-            "available_seats": available_seats,
-            "total_seats": bus.capacity,
+#         return Response({
+#             "bus_route": str(route),
+#             "available_seats": available_seats,
+#             "total_seats": bus.capacity,
            
-        }, status=200)
+#         }, status=200)
