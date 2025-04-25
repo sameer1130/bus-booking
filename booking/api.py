@@ -9,6 +9,7 @@ from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db import models
+from .filters import BookingFilters
 
 
 class CreateBookingView(APIView):
@@ -36,30 +37,14 @@ class CreateBookingView(APIView):
 
 class BookingListView(ListAPIView):
     serializer_class = BookingSerializer
+    queryset = Booking.objects.select_related('user', 'bus_route', 'bus_route__bus').all()
+    filterset_class = BookingFilters
 
-    def get_queryset(self):
-        queryset = Booking.objects.select_related('user', 'bus_route', 'bus_route__bus').all()
-        bus_name = self.request.query_params.get('bus_name')
-        date = self.request.query_params.get('date')
-        customer_name = self.request.query_params.get('customer_name')
-        bus_route = self.request.query_params.get('bus_route')
-
-        if bus_name:
-            queryset = queryset.filter(
-                Q(bus_route__bus__bus_number__icontains=bus_name) | 
-                Q(bus_route__bus__bus_name__icontains=bus_name)
-            )
-        if date:
-            queryset = queryset.filter(bus_route__date=date)
-        if customer_name:
-            queryset = queryset.filter(Q(user__first_name__icontains=customer_name) | Q(user__last_name__icontains=customer_name))
-        if bus_route:
-            try:
-                queryset = queryset.filter(bus_route__uuid=bus_route)
-            except:
-                return queryset.none()
+    # def get_queryset(self):
+    #     queryset = Booking.objects.select_related('user', 'bus_route', 'bus_route__bus').all()
+        
             
-        return queryset
+    #     return queryset
 
 class CancelBookingView(APIView):
     def delete(self, request, uuid):

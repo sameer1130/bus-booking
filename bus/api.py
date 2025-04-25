@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from .models import BusRoute
-from .serializers import BusRouteSerializer
+from .serializers import BusRouteSerializer, AvailableSeatSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import viewsets
@@ -37,7 +37,7 @@ class BusRouteViewSet(viewsets.ViewSet):
     @action(detail= True, methods=['GET'])
     def available_seats(self, request, pk=None):
         bus_route = BusRoute.objects.get(uuid=pk)
-        serializer = BusRouteSerializer(bus_route)
-        return Response({"available_seats":serializer.data.get("available_seats")})
+        serializer = AvailableSeatSerializer(bus_route)
+        return Response({"available_seats":serializer.data})
 
     

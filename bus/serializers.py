@@ -17,7 +17,7 @@ class BusSerializer(serializers.ModelSerializer):
         )
 
 class BusRouteSerializer(serializers.ModelSerializer):
-    available_seats = serializers.SerializerMethodField()
+    # available_seats = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -37,11 +37,19 @@ class BusRouteSerializer(serializers.ModelSerializer):
             "updated_at",
         )
 
-    def get_available_seats(self, obj):
-        total_capacity = obj.bus.capacity
+    # def get_available_seats(self, obj):
+    #     total_capacity = obj.bus.capacity
 
-        booked_seat_count = BookedSeat.objects.filter(
-            booking__bus_route=obj,
-            is_cancelled= False
-        ).count()
-        return total_capacity - booked_seat_count
+    #     booked_seat_count = BookedSeat.objects.filter(
+    #         booking__bus_route=obj,
+    #         is_cancelled= False
+    #     ).count()
+    #     return total_capacity - booked_seat_count
+
+
+class AvailableSeatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BusRoute
+        fields = ['source', 'destination', 'date', 'total_seats', 'available_seats']
+
+
