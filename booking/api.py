@@ -28,10 +28,15 @@ class CreateBookingView(APIView):
         
         
         
-        booking = Booking.objects.create(user=user, bus_route=bus_route, status=Booking.Status.CONFIRMED)
-        serializer = BookingSerializer(booking)
+        # booking = Booking.objects.create(user=user, bus_route=bus_route, status=Booking.Status.CONFIRMED)
+
+        serializer = BookingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=user, bus_route=bus_route, status=Booking.Status.CONFIRMED)
+            return Response({"message": "Booking created successfully.", "data": serializer.data}, status=201)
         
-        return Response({"message": "Booking created successfully.", "data": serializer.data}, status=201)
+        return Response({ "error": serializer.error}, status=400)
+        
          
 
 
